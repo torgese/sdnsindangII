@@ -3,16 +3,86 @@
 <head>
   <meta charset="UTF-8">
   <title>Portal Kelas VI</title>
-</head>
-<body>
-  <h1>Portal Informasi Kelas VI</h1>
-  <p>Selamat datang orang tua/wali murid.</p>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <ul>
-    <li><a href="jadwal.html">Jadwal Pelajaran</a></li>
-    <li><a href="buku.html">Buku Pelajaran</a></li>
-    <li><a href="pengumuman.html">Pengumuman</a></li>
-    <li><a href="akses.html">Akses Kehadiran & Nilai</a></li>
-  </ul>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #1e88e5;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    header p {
+      margin-top: 8px;
+      font-size: 16px;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    .menu {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+    }
+
+    .menu a {
+      background-color: white;
+      padding: 20px;
+      text-align: center;
+      border-radius: 10px;
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .menu a:hover {
+      background-color: #e3f2fd;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+      color: #777;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>Portal Informasi Kelas VI</h1>
+  <p>SDN Sindang II — Tahun Pelajaran 2025/2026</p>
+</header>
+
+<div class="container">
+  <div class="menu">
+    <a href="jadwal.html">📅 Jadwal Pelajaran</a>
+    <a href="buku.html">📘 Buku Pelajaran</a>
+    <a href="pengumuman.html">📢 Pengumuman</a>
+    <a href="akses.html">🔐 Kehadiran & Nilai</a>
+  </div>
+</div>
+
+<footer>
+  © 2026 SDN Sindang II – Kelas VI
+</footer>
+
 </body>
 </html>
