@@ -2,45 +2,103 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Akses Data Siswa</title>
+<title>Kehadiran & Nilai</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
+:root {
+  --primary:#1e88e5;
+  --bg:#f4f6f8;
+  --card:#ffffff;
+}
+
+* { box-sizing:border-box }
+
 body {
-  font-family: Arial, sans-serif;
-  background:#f4f6f8;
   margin:0;
-}
-
-header {
-  background:#1e88e5;
-  color:white;
-  padding:20px;
-  text-align:center;
-}
-
-.container {
-  padding:20px;
-}
-
-.menu {
-  display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap:15px;
-}
-
-.menu a {
-  background:white;
-  padding:20px;
-  text-align:center;
-  border-radius:10px;
-  text-decoration:none;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  background:var(--bg);
   color:#333;
-  font-weight:bold;
 }
 
-.menu a:hover {
-  background:#e3f2fd;
+/* HEADER */
+header {
+  background:var(--primary);
+  color:white;
+  padding:18px;
+  text-align:center;
+}
+
+header h2 {
+  margin:0;
+  font-size:20px;
+}
+
+header a {
+  display:block;
+  margin-top:8px;
+  color:#e3f2fd;
+  text-decoration:none;
+  font-size:14px;
+}
+
+/* CONTAINER */
+.container {
+  padding:16px;
+  max-width:420px;
+  margin:auto;
+}
+
+/* INPUT */
+input {
+  width:100%;
+  padding:14px;
+  font-size:16px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  margin-bottom:12px;
+}
+
+/* BUTTON */
+button {
+  width:100%;
+  padding:14px;
+  font-size:16px;
+  border:none;
+  border-radius:10px;
+  background:var(--primary);
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+}
+
+button:active {
+  transform:scale(0.98);
+}
+
+/* CARD NILAI */
+.card {
+  background:var(--card);
+  margin-top:14px;
+  padding:14px;
+  border-radius:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.card b {
+  font-size:16px;
+  color:#0d47a1;
+}
+
+.card small {
+  color:#666;
+}
+
+/* PESAN */
+#hasil p {
+  text-align:center;
+  margin-top:16px;
+  color:#777;
 }
 </style>
 </head>
@@ -48,16 +106,60 @@ header {
 <body>
 
 <header>
-  <h2>🔐 Akses Data Siswa</h2>
-  <p>Masukkan kode di halaman berikut</p>
+  <h2>📊 Cek Nilai Siswa</h2>
+  <a href="index.html">← Kembali ke Menu</a>
 </header>
 
 <div class="container">
-  <div class="menu">
-    <a href="kehadiran.html">📋 Kehadiran</a>
-    <a href="nilai.html">📊 Nilai</a>
-  </div>
+  <input id="kode" placeholder="Masukkan Kode Orang Tua">
+  <button onclick="cek()">Lihat Nilai</button>
+  <div id="hasil"></div>
 </div>
+
+<script>
+async function cek() {
+  const kodeInput = document.getElementById("kode").value.trim();
+  const hasil = document.getElementById("hasil");
+  hasil.innerHTML = "<p>Memuat data...</p>";
+
+  try {
+    const res = await fetch("data/nilai.csv");
+    const text = await res.text();
+    const rows = text.trim().split("\n").slice(1);
+
+    let output = "";
+
+    rows.forEach(row => {
+      const cols = row.split(";");
+
+      if (cols.length >= 5) {
+        const kode = cols[0].trim();
+        const nama = cols[1].trim();
+        const mapel = cols[2].trim();
+        const tanggal = cols[3].trim();
+        const nilai = cols[4].trim();
+
+        if (kode === kodeInput) {
+          output += `
+            <div class="card">
+              <b>${mapel}</b><br>
+              <small>${nama}</small><br><br>
+              Tanggal: ${tanggal}<br>
+              Nilai: <b>${nilai}</b>
+            </div>
+          `;
+        }
+      }
+    });
+
+    hasil.innerHTML = output || "<p>Data tidak ditemukan</p>";
+
+  } catch (e) {
+    hasil.innerHTML = "<p>Gagal memuat data</p>";
+    console.error(e);
+  }
+}
+</script>
 
 </body>
 </html>
