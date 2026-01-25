@@ -7,69 +7,101 @@
 <style>
 body { font-family: Arial; background:#f4f6f8; margin:0 }
 header { background:#1e88e5; color:white; padding:20px; text-align:center }
-.container { padding:20px }
-input, button {
-  width:100%; padding:10px; margin-top:10px;
-  border-radius:6px; border:1px solid #ccc
+.container { padding:20px; max-width:420px; margin:auto }
+input, select, button {
+  width:100%; padding:12px; margin-top:10px;
+  border-radius:8px; border:1px solid #ccc; font-size:15px
 }
-button { background:#1e88e5; color:white; border:none }
-.card { background:white; padding:15px; margin-top:10px; border-radius:8px }
+button { background:#1e88e5; color:white; border:none; font-weight:bold }
+.card {
+  background:white;
+  padding:15px;
+  margin-top:12px;
+  border-radius:10px;
+  box-shadow:0 2px 5px rgba(0,0,0,.1)
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<h2>📊 Cek Nilai Siswa</h2>
-<a href="index.html" style="color:white">← Kembali</a>
+  <h2>📊 Cek Nilai Siswa</h2>
+  <a href="akses.html" style="color:white">← Kembali</a>
 </header>
 
 <div class="container">
   <input id="kode" placeholder="Masukkan Kode Orang Tua">
-  <button onclick="cek()">Lihat Nilai</button>
+
+  <select id="mapel">
+    <option value="">-- Pilih Mata Pelajaran --</option>
+    <option>Matematika</option>
+    <option>Bahasa Indonesia</option>
+    <option>IPAS</option>
+    <option>PPKn</option>
+    <option>Bahasa Sunda</option>
+    <option>Bahasa Inggris</option>
+    <option>SBDP</option>
+  </select>
+
+  <button onclick="cek()">Tampilkan Nilai</button>
   <div id="hasil"></div>
 </div>
 
 <script>
+function normalMapel(text) {
+  return text
+    .toLowerCase()
+    .replace(/\s*\(.*?\)\s*/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 async function cek() {
   const kodeInput = document.getElementById("kode").value.trim();
+  const mapelInput = document.getElementById("mapel").value;
+  const hasil = document.getElementById("hasil");
+
+  if (!kodeInput || !mapelInput) {
+    hasil.innerHTML = "<p>⚠️ Kode dan mata pelajaran harus dipilih</p>";
+    return;
+  }
 
   try {
     const res = await fetch("data/nilai.csv");
     const text = await res.text();
+    const rows = text.replace(/\r/g,"").trim().split("\n").slice(1);
 
-    const rows = text.trim().split("\n").slice(1);
     let output = "";
 
     rows.forEach(row => {
-      const cols = row.split(";"); // ← PENTING
-
+      const cols = row.split(";");
       if (cols.length >= 5) {
-        const k = cols[0].trim();
+        const kode = cols[0].trim();
         const nama = cols[1].trim();
-        const mapel = cols[2].trim();
-        const tgl = cols[3].trim();
+        const mapelCSV = cols[2].trim();
+        const tanggal = cols[3].trim();
         const nilai = cols[4].trim();
 
-        if (k === kodeInput) {
+        if (
+          kode === kodeInput &&
+          normalMapel(mapelCSV) === normalMapel(mapelInput)
+        ) {
           output += `
             <div class="card">
-              <b>${mapel}</b><br>
+              <b>${mapelCSV}</b><br>
               Nama: ${nama}<br>
-              Tanggal: ${tgl}<br>
-              Nilai: ${nilai}
-            </div>
-          `;
+              Tanggal: ${tanggal}<br>
+              Nilai: <b>${nilai}</b>
+            </div>`;
         }
       }
     });
 
-    document.getElementById("hasil").innerHTML =
-      output || "<p>Data tidak ditemukan</p>";
+    hasil.innerHTML = output || "<p>❌ Data tidak ditemukan</p>";
 
   } catch (e) {
-    document.getElementById("hasil").innerHTML =
-      "<p>Gagal membaca data</p>";
+    hasil.innerHTML = "<p>❌ Gagal membaca data</p>";
     console.error(e);
   }
 }
