@@ -1,9 +1,9 @@
 kode;nama;mapel;tanggal ;nilai
-A1.3195550441,AGHNI PUTRI RAHAYU,matematika (desimal),13/01/2026;100
+A1.3195550441; AGHNI PUTRI RAHAYU;matematika (desimal);13/01/2026;100
 A2.3142815160 ;AHMAD KAMAL EL MISHBAH;matematika (desimal);13/01/2026;100
 A3.0136973498 ;AKBAR FAUZAN;matematika (desimal);13/01/2026;100
 A4.3171442847 ;AKHILA ZIHNI AZIZA;matematika (desimal);13/01/2026;100
-A5.3197603046 ;Deila FebrianiÂ ;matematika (desimal);13/01/2026;100
+A5.3197603046 ;Deila Febriani ;matematika (desimal);13/01/2026;100
 A6.3163941081; Denisa;matematika (desimal);13/01/2026;50
 A7.3151228941; Diantry nur septiani;matematika (desimal);13/01/2026;40
 A8.3151253672 ;Fauzan sukmana darmawan;matematika (desimal);13/01/2026;100
@@ -32,7 +32,7 @@ A1.3195550441; AGHNI PUTRI RAHAYU;matematika (desimal);13/01/2026;100
 A2.3142815160 ;AHMAD KAMAL EL MISHBAH;matematika (desimal);13/01/2026;50
 A3.0136973498 ;AKBAR FAUZAN;matematika (desimal);13/01/2026;100
 A4.3171442847 ;AKHILA ZIHNI AZIZA;matematika (desimal);13/01/2026;100
-A5.3197603046 ;Deila FebrianiÂ ;matematika (desimal);13/01/2026;100
+A5.3197603046 ;Deila Febriani ;matematika (desimal);13/01/2026;100
 A6.3163941081; Denisa;matematika (desimal);13/01/2026;40
 A7.3151228941; Diantry nur septiani;matematika (desimal);13/01/2026;100
 A8.3151253672 ;Fauzan sukmana darmawan;matematika (desimal);13/01/2026;70
@@ -61,7 +61,7 @@ A1.3195550441; AGHNI PUTRI RAHAYU;matematika (pecahan);15/01/2026;80
 A2.3142815160 ;AHMAD KAMAL EL MISHBAH;matematika (pecahan);15/01/2026;60
 A3.0136973498 ;AKBAR FAUZAN;matematika (pecahan);15/01/2026;40
 A4.3171442847 ;AKHILA ZIHNI AZIZA;matematika (pecahan);15/01/2026;80
-A5.3197603046 ;Deila FebrianiÂ ;matematika (pecahan);15/01/2026;60
+A5.3197603046 ;Deila Febriani ;matematika (pecahan);15/01/2026;60
 A6.3163941081; Denisa;matematika (pecahan);15/01/2026;40
 A7.3151228941; Diantry nur septiani;matematika (pecahan);15/01/2026;40
 A8.3151253672 ;Fauzan sukmana darmawan;matematika (pecahan);15/01/2026;40
@@ -90,7 +90,7 @@ A1.3195550441; AGHNI PUTRI RAHAYU;matematika (pecahan perkalian);20/01/2026;
 A2.3142815160 ;AHMAD KAMAL EL MISHBAH;matematika (pecahan perkalian);20/01/2026;70
 A3.0136973498 ;AKBAR FAUZAN;matematika (pecahan perkalian);20/01/2026;50
 A4.3171442847 ;AKHILA ZIHNI AZIZA;matematika (pecahan perkalian);20/01/2026;100
-A5.3197603046 ;Deila FebrianiÂ ;matematika (pecahan perkalian);20/01/2026;100
+A5.3197603046 ;Deila Febriani ;matematika (pecahan perkalian);20/01/2026;100
 A6.3163941081; Denisa;matematika (pecahan perkalian);20/01/2026;10
 A7.3151228941; Diantry nur septiani;matematika (pecahan perkalian);20/01/2026;60
 A8.3151253672 ;Fauzan sukmana darmawan;matematika (pecahan perkalian);20/01/2026;30
@@ -119,7 +119,7 @@ A1.3195550441; AGHNI PUTRI RAHAYU;matematika (Pecahan perkalian & Pembagian);22/
 A2.3142815160 ;AHMAD KAMAL EL MISHBAH;matematika (Pecahan perkalian & Pembagian);22/01/2026;100
 A3.0136973498 ;AKBAR FAUZAN;matematika (Pecahan perkalian & Pembagian);22/01/2026;90
 A4.3171442847 ;AKHILA ZIHNI AZIZA;matematika (Pecahan perkalian & Pembagian);22/01/2026;100
-A5.3197603046 ;Deila FebrianiÂ ;matematika (Pecahan perkalian & Pembagian);22/01/2026;100
+A5.3197603046 ;Deila Febriani ;matematika (Pecahan perkalian & Pembagian);22/01/2026;100
 A6.3163941081; Denisa;matematika (Pecahan perkalian & Pembagian);22/01/2026;60
 A7.3151228941; Diantry nur septiani;matematika (Pecahan perkalian & Pembagian);22/01/2026;50
 A8.3151253672 ;Fauzan sukmana darmawan;matematika (Pecahan perkalian & Pembagian);22/01/2026;60
@@ -148,7 +148,7 @@ A1.3195550441; AGHNI PUTRI RAHAYU;SBDP (Perkenalan seni musik;13/01/2026;80
 A2.3142815160 ;AHMAD KAMAL EL MISHBAH;SBDP (Perkenalan seni musik;13/01/2026;80
 A3.0136973498 ;AKBAR FAUZAN;SBDP (Perkenalan seni musik;13/01/2026;80
 A4.3171442847 ;AKHILA ZIHNI AZIZA;SBDP (Perkenalan seni musik;13/01/2026;80
-A5.3197603046 ;Deila FebrianiÂ ;SBDP (Perkenalan seni musik;13/01/2026;80
+A5.3197603046 ;Deila Febriani ;SBDP (Perkenalan seni musik;13/01/2026;80
 A6.3163941081; Denisa;SBDP (Perkenalan seni musik;13/01/2026;80
 A7.3151228941; Diantry nur septiani;SBDP (Perkenalan seni musik;13/01/2026;70
 A8.3151253672 ;Fauzan sukmana darmawan;SBDP (Perkenalan seni musik;13/01/2026;80
@@ -177,7 +177,7 @@ A1.3195550441; AGHNI PUTRI RAHAYU;SBDP (Ritmis);19/01/2026;100
 A2.3142815160 ;AHMAD KAMAL EL MISHBAH;SBDP (Ritmis);19/01/2026;30
 A3.0136973498 ;AKBAR FAUZAN;SBDP (Ritmis);19/01/2026;100
 A4.3171442847 ;AKHILA ZIHNI AZIZA;SBDP (Ritmis);19/01/2026;100
-A5.3197603046 ;Deila FebrianiÂ ;SBDP (Ritmis);19/01/2026;60
+A5.3197603046 ;Deila Febriani ;SBDP (Ritmis);19/01/2026;60
 A6.3163941081; Denisa;SBDP (Ritmis);19/01/2026;80
 A7.3151228941; Diantry nur septiani;SBDP (Ritmis);19/01/2026;80
 A8.3151253672 ;Fauzan sukmana darmawan;SBDP (Ritmis);19/01/2026;100
@@ -206,7 +206,7 @@ A1.3195550441; AGHNI PUTRI RAHAYU;PKN (Pancasila);14/01/2026;100
 A2.3142815160 ;AHMAD KAMAL EL MISHBAH;PKN (Pancasila);14/01/2026;100
 A3.0136973498 ;AKBAR FAUZAN;PKN (Pancasila);14/01/2026;60
 A4.3171442847 ;AKHILA ZIHNI AZIZA;PKN (Pancasila);14/01/2026;100
-A5.3197603046 ;Deila FebrianiÂ ;PKN (Pancasila);14/01/2026;60
+A5.3197603046 ;Deila Febriani ;PKN (Pancasila);14/01/2026;60
 A6.3163941081; Denisa;PKN (Pancasila);14/01/2026;20
 A7.3151228941; Diantry nur septiani;PKN (Pancasila);14/01/2026;20
 A8.3151253672 ;Fauzan sukmana darmawan;PKN (Pancasila);14/01/2026;60
@@ -235,7 +235,7 @@ A1.3195550441; AGHNI PUTRI RAHAYU;PKN (Pancasila);21/01/2026;80
 A2.3142815160 ;AHMAD KAMAL EL MISHBAH;PKN (Pancasila);21/01/2026;35
 A3.0136973498 ;AKBAR FAUZAN;PKN (Pancasila);21/01/2026;100
 A4.3171442847 ;AKHILA ZIHNI AZIZA;PKN (Pancasila);21/01/2026;80
-A5.3197603046 ;Deila FebrianiÂ ;PKN (Pancasila);21/01/2026;80
+A5.3197603046 ;Deila Febriani ;PKN (Pancasila);21/01/2026;80
 A6.3163941081; Denisa;PKN (Pancasila);21/01/2026;50
 A7.3151228941; Diantry nur septiani;PKN (Pancasila);21/01/2026;40
 A8.3151253672 ;Fauzan sukmana darmawan;PKN (Pancasila);21/01/2026;
@@ -264,7 +264,7 @@ A1.3195550441; AGHNI PUTRI RAHAYU;Bahasa Sunda (Biantara;19/01/2026;85
 A2.3142815160 ;AHMAD KAMAL EL MISHBAH;Bahasa Sunda (Biantara;19/01/2026;60
 A3.0136973498 ;AKBAR FAUZAN;Bahasa Sunda (Biantara;19/01/2026;
 A4.3171442847 ;AKHILA ZIHNI AZIZA;Bahasa Sunda (Biantara;19/01/2026;95
-A5.3197603046 ;Deila FebrianiÂ ;Bahasa Sunda (Biantara;19/01/2026;80
+A5.3197603046 ;Deila Febriani ;Bahasa Sunda (Biantara;19/01/2026;80
 A6.3163941081; Denisa;Bahasa Sunda (Biantara;19/01/2026;90
 A7.3151228941; Diantry nur septiani;Bahasa Sunda (Biantara;19/01/2026;70
 A8.3151253672 ;Fauzan sukmana darmawan;Bahasa Sunda (Biantara;19/01/2026;
@@ -293,7 +293,7 @@ A1.3195550441; AGHNI PUTRI RAHAYU;Bahasa Inggris (Vocabulry);21/01/2026;90
 A2.3142815160 ;AHMAD KAMAL EL MISHBAH;Bahasa Inggris (Vocabulry);21/01/2026;100
 A3.0136973498 ;AKBAR FAUZAN;Bahasa Inggris (Vocabulry);21/01/2026;80
 A4.3171442847 ;AKHILA ZIHNI AZIZA;Bahasa Inggris (Vocabulry);21/01/2026;90
-A5.3197603046 ;Deila FebrianiÂ ;Bahasa Inggris (Vocabulry);21/01/2026;80
+A5.3197603046 ;Deila Febriani ;Bahasa Inggris (Vocabulry);21/01/2026;80
 A6.3163941081; Denisa;Bahasa Inggris (Vocabulry);21/01/2026;30
 A7.3151228941; Diantry nur septiani;Bahasa Inggris (Vocabulry);21/01/2026;50
 A8.3151253672 ;Fauzan sukmana darmawan;Bahasa Inggris (Vocabulry);21/01/2026;
@@ -318,4 +318,119 @@ A26.0155833487; Revina Az Zahra;Bahasa Inggris (Vocabulry);21/01/2026;70
 A27.3181290187 ;Siti sofiah nur solehah;Bahasa Inggris (Vocabulry);21/01/2026;90
 A28.3189385355 ;Sofianisa nur habibah;Bahasa Inggris (Vocabulry);21/01/2026;80
 A29.3162080036 ;Syalma kirana;Bahasa Inggris (Vocabulry);21/01/2026;0
-
+A1.3195550441; AGHNI PUTRI RAHAYU;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;80
+A2.3142815160 ;AHMAD KAMAL EL MISHBAH;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;60
+A3.0136973498 ;AKBAR FAUZAN;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;40
+A4.3171442847 ;AKHILA ZIHNI AZIZA;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;80
+A5.3197603046 ;Deila Febriani ;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;80
+A6.3163941081; Denisa;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;20
+A7.3151228941; Diantry nur septiani;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;40
+A8.3151253672 ;Fauzan sukmana darmawan;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;40
+A9.0143526835 ;Friskia andara putri;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;40
+A10.3192934591 ;Hamzah saepudin;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;0
+A11.3150532323 ;Indah meida nurjanah;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;60
+A12.0142683216 ;Iqbal nurrohman;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;40
+A13.0156966643; Irfan Ardiansyah;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;100
+A14.3166839498 ;Juliyana Saputra;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;40
+A15.0144459056; Layyina konita auliya;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;40
+A16.3153557291; Luthfa nur faidah;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;20
+A17.3186024544; Mikhayla putri apandi;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;80
+A18.3180536658; Mirza ukail;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;60
+A19.0134981013 ;Muhammad Nur Sena;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;
+A20.3165650137; Muhammad nugi nugraha;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;0
+A21.0151066438 ;Muhamad reza supriatna;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;20
+A22.3163756214 ;Muhammad Thariq nashrul haq;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;60
+A23.3184717724 ;Muhammad zulfan azhar fauzan;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;60
+A24.3153171868; Novi anggraeni;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;40
+A25.0131197461 ;Radiansyah amanullah;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;20
+A26.0155833487; Revina Az Zahra;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;60
+A27.3181290187 ;Siti sofiah nur solehah;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;80
+A28.3189385355 ;Sofianisa nur habibah;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;80
+A29.3162080036 ;Syalma kirana;IPAS (Indonesia dan Masyarakat dunia : Peta Konsep);15/01/2026;20
+A1.3195550441; AGHNI PUTRI RAHAYU;IPAS (Asean);13/01/2025;100
+A2.3142815160 ;AHMAD KAMAL EL MISHBAH;IPAS (Asean);13/01/2025;80
+A3.0136973498 ;AKBAR FAUZAN;IPAS (Asean);13/01/2025;100
+A4.3171442847 ;AKHILA ZIHNI AZIZA;IPAS (Asean);13/01/2025;100
+A5.3197603046 ;Deila Febriani ;IPAS (Asean);13/01/2025;20
+A6.3163941081; Denisa;IPAS (Asean);13/01/2025;40
+A7.3151228941; Diantry nur septiani;IPAS (Asean);13/01/2025;40
+A8.3151253672 ;Fauzan sukmana darmawan;IPAS (Asean);13/01/2025;100
+A9.0143526835 ;Friskia andara putri;IPAS (Asean);13/01/2025;80
+A10.3192934591 ;Hamzah saepudin;IPAS (Asean);13/01/2025;80
+A11.3150532323 ;Indah meida nurjanah;IPAS (Asean);13/01/2025;100
+A12.0142683216 ;Iqbal nurrohman;IPAS (Asean);13/01/2025;80
+A13.0156966643; Irfan Ardiansyah;IPAS (Asean);13/01/2025;100
+A14.3166839498 ;Juliyana Saputra;IPAS (Asean);13/01/2025;
+A15.0144459056; Layyina konita auliya;IPAS (Asean);13/01/2025;20
+A16.3153557291; Luthfa nur faidah;IPAS (Asean);13/01/2025;
+A17.3186024544; Mikhayla putri apandi;IPAS (Asean);13/01/2025;100
+A18.3180536658; Mirza ukail;IPAS (Asean);13/01/2025;100
+A19.0134981013 ;Muhammad Nur Sena;IPAS (Asean);13/01/2025;
+A20.3165650137; Muhammad nugi nugraha;IPAS (Asean);13/01/2025;
+A21.0151066438 ;Muhamad reza supriatna;IPAS (Asean);13/01/2025;
+A22.3163756214 ;Muhammad Thariq nashrul haq;IPAS (Asean);13/01/2025;100
+A23.3184717724 ;Muhammad zulfan azhar fauzan;IPAS (Asean);13/01/2025;100
+A24.3153171868; Novi anggraeni;IPAS (Asean);13/01/2025;40
+A25.0131197461 ;Radiansyah amanullah;IPAS (Asean);13/01/2025;100
+A26.0155833487; Revina Az Zahra;IPAS (Asean);13/01/2025;0
+A27.3181290187 ;Siti sofiah nur solehah;IPAS (Asean);13/01/2025;100
+A28.3189385355 ;Sofianisa nur habibah;IPAS (Asean);13/01/2025;80
+A29.3162080036 ;Syalma kirana;IPAS (Asean);13/01/2025;100
+A1.3195550441; AGHNI PUTRI RAHAYU;IPAS (Ekspor & Impor;22/01/2025;90
+A2.3142815160 ;AHMAD KAMAL EL MISHBAH;IPAS (Ekspor & Impor;22/01/2025;80
+A3.0136973498 ;AKBAR FAUZAN;IPAS (Ekspor & Impor;22/01/2025;90
+A4.3171442847 ;AKHILA ZIHNI AZIZA;IPAS (Ekspor & Impor;22/01/2025;90
+A5.3197603046 ;Deila Febriani ;IPAS (Ekspor & Impor;22/01/2025;90
+A6.3163941081; Denisa;IPAS (Ekspor & Impor;22/01/2025;80
+A7.3151228941; Diantry nur septiani;IPAS (Ekspor & Impor;22/01/2025;50
+A8.3151253672 ;Fauzan sukmana darmawan;IPAS (Ekspor & Impor;22/01/2025;80
+A9.0143526835 ;Friskia andara putri;IPAS (Ekspor & Impor;22/01/2025;70
+A10.3192934591 ;Hamzah saepudin;IPAS (Ekspor & Impor;22/01/2025;50
+A11.3150532323 ;Indah meida nurjanah;IPAS (Ekspor & Impor;22/01/2025;90
+A12.0142683216 ;Iqbal nurrohman;IPAS (Ekspor & Impor;22/01/2025;90
+A13.0156966643; Irfan Ardiansyah;IPAS (Ekspor & Impor;22/01/2025;100
+A14.3166839498 ;Juliyana Saputra;IPAS (Ekspor & Impor;22/01/2025;90
+A15.0144459056; Layyina konita auliya;IPAS (Ekspor & Impor;22/01/2025;90
+A16.3153557291; Luthfa nur faidah;IPAS (Ekspor & Impor;22/01/2025;100
+A17.3186024544; Mikhayla putri apandi;IPAS (Ekspor & Impor;22/01/2025;90
+A18.3180536658; Mirza ukail;IPAS (Ekspor & Impor;22/01/2025;90
+A19.0134981013 ;Muhammad Nur Sena;IPAS (Ekspor & Impor;22/01/2025;70
+A20.3165650137; Muhammad nugi nugraha;IPAS (Ekspor & Impor;22/01/2025;70
+A21.0151066438 ;Muhamad reza supriatna;IPAS (Ekspor & Impor;22/01/2025;50
+A22.3163756214 ;Muhammad Thariq nashrul haq;IPAS (Ekspor & Impor;22/01/2025;100
+A23.3184717724 ;Muhammad zulfan azhar fauzan;IPAS (Ekspor & Impor;22/01/2025;90
+A24.3153171868; Novi anggraeni;IPAS (Ekspor & Impor;22/01/2025;80
+A25.0131197461 ;Radiansyah amanullah;IPAS (Ekspor & Impor;22/01/2025;90
+A26.0155833487; Revina Az Zahra;IPAS (Ekspor & Impor;22/01/2025;100
+A27.3181290187 ;Siti sofiah nur solehah;IPAS (Ekspor & Impor;22/01/2025;70
+A28.3189385355 ;Sofianisa nur habibah;IPAS (Ekspor & Impor;22/01/2025;90
+A29.3162080036 ;Syalma kirana;IPAS (Ekspor & Impor;22/01/2025;60
+A1.3195550441; AGHNI PUTRI RAHAYU;;;
+A2.3142815160 ;AHMAD KAMAL EL MISHBAH;;;
+A3.0136973498 ;AKBAR FAUZAN;;;
+A4.3171442847 ;AKHILA ZIHNI AZIZA;;;
+A5.3197603046 ;Deila Febriani ;;;
+A6.3163941081; Denisa;;;
+A7.3151228941; Diantry nur septiani;;;
+A8.3151253672 ;Fauzan sukmana darmawan;;;
+A9.0143526835 ;Friskia andara putri;;;
+A10.3192934591 ;Hamzah saepudin;;;
+A11.3150532323 ;Indah meida nurjanah;;;
+A12.0142683216 ;Iqbal nurrohman;;;
+A13.0156966643; Irfan Ardiansyah;;;
+A14.3166839498 ;Juliyana Saputra;;;
+A15.0144459056; Layyina konita auliya;;;
+A16.3153557291; Luthfa nur faidah;;;
+A17.3186024544; Mikhayla putri apandi;;;
+A18.3180536658; Mirza ukail;;;
+A19.0134981013 ;Muhammad Nur Sena;;;
+A20.3165650137; Muhammad nugi nugraha;;;
+A21.0151066438 ;Muhamad reza supriatna;;;
+A22.3163756214 ;Muhammad Thariq nashrul haq;;;
+A23.3184717724 ;Muhammad zulfan azhar fauzan;;;
+A24.3153171868; Novi anggraeni;;;
+A25.0131197461 ;Radiansyah amanullah;;;
+A26.0155833487; Revina Az Zahra;;;
+A27.3181290187 ;Siti sofiah nur solehah;;;
+A28.3189385355 ;Sofianisa nur habibah;;;
+A29.3162080036 ;Syalma kirana;;;
