@@ -12,7 +12,15 @@ const pengumuman = [
   {
     judul: "Lini Masa Pelaksanaan TKA SD/MI/SDLB/Paket A/sederajat",
     tanggal: "19 Januari - 24 Mei 2026",
-    isi: "1. Pendaftaran 19 Januari - 28 Februari, 2.Simulasi 2 - 8 Maret, 3.Gladi Bersih 9 - 17 Maret, 4.Pelaksanaan Utama 20 - 30 April, 5.Pelaksanaan Susulan 11 - 17 Mei, 5.Pengolahan Hasil 18 - 23 Mei, 6.Pengumuman Hasil 24 Mei,."
+    isi: " <ol>
+      <li>Pendaftaran 19 Januari - 28 Februari</li>
+      <li>Simulasi 2 - 8 Maret</li>
+      <li>Gladi Bersih 9 - 17 Maret</li>
+      <li>Pelaksanaan Utama 20 - 30 April</li>
+      <li>Pelaksanaan Susulan 11 - 17 Mei</li>
+      <li>Pengolahan Hasil 18 - 23 Mei</li>
+      <li>Pengumuman Hasil 24 Mei</li>
+    </ol>"
   }
 ];
 
