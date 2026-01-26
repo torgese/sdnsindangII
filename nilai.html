@@ -32,9 +32,7 @@ button { background:#1e88e5; color:white; border:none }
   <input id="kode" placeholder="Masukkan Kode Orang Tua">
   <button onclick="cek()">Lihat Nilai</button>
 
-  <select id="filterMapel" onchange="tampil()" style="display:none">
-    <option value="all">Semua Mapel</option>
-  </select>
+  <select id="filterMapel" onchange="tampil()" style="display:none"></select>
 
   <div id="hasil"></div>
 </div>
@@ -42,43 +40,57 @@ button { background:#1e88e5; color:white; border:none }
 <script>
 let semuaData = [];
 
+function parseTanggal(tgl) {
+  const [d,m,y] = tgl.split("/");
+  return new Date(`${y}-${m}-${d}`);
+}
+
 async function cek() {
   const kode = document.getElementById("kode").value.trim();
   const res = await fetch("data/nilai.csv");
   const text = await res.text();
 
-  const rows = text.split("\n").slice(1);
   semuaData = [];
+  const rows = text.split("\n").slice(1);
 
   rows.forEach(r => {
     if (!r.trim()) return;
-    let [k, nama, mapel, tanggal, nilai] = r.split(";").map(x => x.trim());
+
+    const kolom = r.split(";").map(x => x.trim());
+    if (kolom.length < 5) return;
+
+    const [k, nama, mapel, tanggal, nilai] = kolom;
+
     if (k === kode) {
       semuaData.push({
         nama,
         mapel: mapel.replace(/\s*\(.*?\)/g, ""),
         tanggal,
-        nilai
+        nilai,
+        dateObj: parseTanggal(tanggal)
       });
     }
   });
 
   if (semuaData.length === 0) {
-    document.getElementById("hasil").innerHTML = "<p>Data tidak ditemukan</p>";
+    document.getElementById("hasil").innerHTML =
+      "<p>Data tidak ditemukan</p>";
+    document.getElementById("filterMapel").style.display = "none";
     return;
   }
 
-  // urutkan tanggal terbaru
-  semuaData.sort((a,b) => new Date(b.tanggal) - new Date(a.tanggal));
+  // URUT TANGGAL TERBARU
+  semuaData.sort((a,b) => b.dateObj - a.dateObj);
 
-  // isi dropdown mapel
+  // DROPDOWN MAPEL
   const select = document.getElementById("filterMapel");
   select.innerHTML = `<option value="all">Semua Mapel</option>`;
+
   [...new Set(semuaData.map(d => d.mapel))].forEach(m => {
     select.innerHTML += `<option value="${m}">${m}</option>`;
   });
-  select.style.display = "block";
 
+  select.style.display = "block";
   tampil();
 }
 
@@ -87,9 +99,11 @@ function tampil() {
   const hasil = document.getElementById("hasil");
   hasil.innerHTML = "";
 
-  let data = pilih === "all"
+  const data = pilih === "all"
     ? semuaData
     : semuaData.filter(d => d.mapel === pilih);
+
+  hasil.innerHTML += `<div class="card"><b>${data[0].nama}</b></div>`;
 
   let grup = {};
   data.forEach(d => {
@@ -97,10 +111,8 @@ function tampil() {
     grup[d.mapel].push(d);
   });
 
-  hasil.innerHTML = `<div class='card'><b>${semuaData[0].nama}</b></div>`;
-
   for (let m in grup) {
-    hasil.innerHTML += `<div class='card'><div class='mapel'>${m}</div>`;
+    hasil.innerHTML += `<div class="card"><div class="mapel">${m}</div>`;
     grup[m].forEach(i => {
       hasil.innerHTML += `${i.tanggal} : Nilai ${i.nilai}<br>`;
     });
