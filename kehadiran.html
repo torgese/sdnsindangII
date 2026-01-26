@@ -34,25 +34,46 @@ button { background:#1e88e5; color:white; border:none }
 </div>
 
 <script>
-async function cek() {
-  const kode = document.getElementById("kode").value.trim();
-  const res = await fetch("data/kehadiran.csv");
-  const text = await res.text();
-  const rows = text.split("\n").slice(1);
+async function cekKehadiran() {
+  const kodeInput = document.getElementById("kode").value.trim();
+  const hasil = document.getElementById("hasil");
 
-  let output = "";
-  rows.forEach(r => {
-    const [k,nama,tgl,status] = r.split(",");
-    if (k === kode) {
-      output += `<div class='card'>
-        <b>${nama}</b><br>
-        ${tgl} : ${status}
-      </div>`;
-    }
-  });
+  try {
+    const res = await fetch("data/kehadiran.csv");
+    const text = await res.text();
 
-  document.getElementById("hasil").innerHTML =
-    output || "<p>Data tidak ditemukan</p>";
+    const rows = text.trim().split("\n").slice(1);
+    let output = "";
+
+    rows.forEach(row => {
+      // 🔑 AUTO DETECT delimiter
+      const delimiter = row.includes(";") ? ";" : ",";
+      const cols = row.split(delimiter).map(c => c.trim());
+
+      if (cols.length >= 4) {
+        const kode = cols[0];
+        const nama = cols[1];
+        const tanggal = cols[2];
+        const status = cols[3];
+
+        if (kode === kodeInput) {
+          output += `
+            <div class="card">
+              <b>${tanggal}</b><br>
+              Nama: ${nama}<br>
+              Status: ${status}
+            </div>
+          `;
+        }
+      }
+    });
+
+    hasil.innerHTML = output || "<p>Data kehadiran tidak ditemukan</p>";
+
+  } catch (e) {
+    hasil.innerHTML = "<p>Gagal membaca data kehadiran</p>";
+    console.error(e);
+  }
 }
 </script>
 
