@@ -34,7 +34,7 @@ button { background:#1e88e5; color:white; border:none }
 </div>
 
 <script>
-async function cekKehadiran() {
+async function cek() {
   const kodeInput = document.getElementById("kode").value.trim();
   const hasil = document.getElementById("hasil");
 
@@ -42,37 +42,37 @@ async function cekKehadiran() {
     const res = await fetch("data/kehadiran.csv");
     const text = await res.text();
 
-    const rows = text.trim().split("\n").slice(1);
+    const rows = text.trim().split(/\r?\n/).slice(1);
     let output = "";
 
     rows.forEach(row => {
-      // 🔑 AUTO DETECT delimiter
+      if (!row) return;
+
       const delimiter = row.includes(";") ? ";" : ",";
       const cols = row.split(delimiter).map(c => c.trim());
 
       if (cols.length >= 4) {
-        const kode = cols[0];
+        const k = cols[0];
         const nama = cols[1];
-        const tanggal = cols[2];
+        const tgl = cols[2];
         const status = cols[3];
 
-        if (kode === kodeInput) {
+        if (k === kodeInput) {
           output += `
             <div class="card">
-              <b>${tanggal}</b><br>
-              Nama: ${nama}<br>
-              Status: ${status}
+              <b>${nama}</b><br>
+              ${tgl} : ${status}
             </div>
           `;
         }
       }
     });
 
-    hasil.innerHTML = output || "<p>Data kehadiran tidak ditemukan</p>";
+    hasil.innerHTML = output || "<p>Data tidak ditemukan</p>";
 
-  } catch (e) {
+  } catch (err) {
     hasil.innerHTML = "<p>Gagal membaca data kehadiran</p>";
-    console.error(e);
+    console.error(err);
   }
 }
 </script>
