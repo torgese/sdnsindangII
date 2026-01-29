@@ -23,6 +23,10 @@ button { background:#1e88e5; color:white; border:none }
   font-weight:bold;
   color:#1e88e5
 }
+.materi {
+  font-size: 0.9em;
+  color: #555;
+}
 </style>
 </head>
 
@@ -69,7 +73,8 @@ async function cek() {
     if (k === kode) {
       semuaData.push({
         nama,
-        mapel: mapel.replace(/\s*\(.*?\)/g, ""),
+        mapelUtama: mapel.replace(/\s*\(.*?\)/g, ""),
+        mapelFull: mapel, // ← MATERI DISIMPAN
         tanggal,
         nilai: Number(nilai),
         dateObj: parseTanggal(tanggal)
@@ -84,14 +89,12 @@ async function cek() {
     return;
   }
 
-  // URUT TANGGAL TERBARU
   semuaData.sort((a,b) => b.dateObj - a.dateObj);
 
-  // DROPDOWN MAPEL
   const select = document.getElementById("filterMapel");
   select.innerHTML = `<option value="all">Semua Mapel</option>`;
 
-  [...new Set(semuaData.map(d => d.mapel))].forEach(m => {
+  [...new Set(semuaData.map(d => d.mapelUtama))].forEach(m => {
     select.innerHTML += `<option value="${m}">${m}</option>`;
   });
 
@@ -106,14 +109,14 @@ function tampil() {
 
   const data = pilih === "all"
     ? semuaData
-    : semuaData.filter(d => d.mapel === pilih);
+    : semuaData.filter(d => d.mapelUtama === pilih);
 
   hasil.innerHTML += `<div class="card"><b>${data[0].nama}</b></div>`;
 
   let grup = {};
   data.forEach(d => {
-    if (!grup[d.mapel]) grup[d.mapel] = [];
-    grup[d.mapel].push(d);
+    if (!grup[d.mapelUtama]) grup[d.mapelUtama] = [];
+    grup[d.mapelUtama].push(d);
   });
 
   for (let m in grup) {
@@ -125,7 +128,10 @@ function tampil() {
       <div class="mapel">${m}</div>`;
 
     grup[m].forEach(i => {
-      hasil.innerHTML += `${i.tanggal} : Nilai ${i.nilai}<br>`;
+      hasil.innerHTML += `
+        <div class="materi">
+          ${i.tanggal} : ${i.mapelFull} → Nilai ${i.nilai}
+        </div>`;
     });
 
     hasil.innerHTML += `<div class="avg">Rata-rata: ${rata}</div></div>`;
