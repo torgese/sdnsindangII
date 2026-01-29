@@ -2,144 +2,137 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Kehadiran Siswa</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daftar Kehadiran</title>
 
 <style>
 body {
-  font-family: Arial, sans-serif;
-  background:#f4f6f8;
-  margin:0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    padding: 16px;
 }
-header {
-  background:#1e88e5;
-  color:white;
-  padding:20px;
-  text-align:center;
+
+h2 {
+    text-align: center;
+    margin-bottom: 12px;
 }
-.container {
-  padding:20px;
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
 }
-input, button {
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border-radius:8px;
-  border:1px solid #ccc;
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
 }
-button {
-  background:#1e88e5;
-  color:white;
-  border:none;
-  font-size:16px;
+
+th {
+    background: #1d4ed8;
+    color: #fff;
+    position: sticky;
+    top: 0;
 }
-.card {
-  background:white;
-  padding:15px;
-  margin-top:15px;
-  border-radius:10px;
-  box-shadow:0 2px 6px rgba(0,0,0,.05);
+
+tr:nth-child(even) {
+    background: #f1f5f9;
 }
-.tanggal {
-  font-size:14px;
-  color:#555;
+
+.empty {
+    text-align: center;
+    padding: 16px;
+    color: #666;
 }
-.status {
-  font-weight:bold;
+
+@media (max-width:600px) {
+    th, td {
+        font-size: 12px;
+        padding: 8px;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <h2>📅 Cek Kehadiran Siswa</h2>
-  <a href="index.html" style="color:white">← Kembali</a>
-</header>
+<h2>📋 Daftar Kehadiran (Terbaru)</h2>
 
-<div class="container">
-  <input id="kode" placeholder="Masukkan Kode Orang Tua">
-  <button onclick="cek()">Lihat Kehadiran</button>
-  <div id="hasil"></div>
-</div>
+<table>
+<thead>
+<tr>
+    <th>Tanggal</th>
+    <th>Kode</th>
+    <th>Nama</th>
+    <th>Status</th>
+</tr>
+</thead>
+<tbody id="data">
+<tr><td colspan="4" class="empty">Memuat data...</td></tr>
+</tbody>
+</table>
 
 <script>
 function parseTanggal(tgl) {
-  const p = tgl.split("/").map(Number);
-  let d, m, y;
+    // Support: MM/DD/YY & MM/DD/YYYY
+    const p = tgl.split('/');
+    if (p.length !== 3) return null;
 
-  // Deteksi format otomatis
-  if (p[0] > 12) {
-    // DD/MM/YYYY
-    d = p[0]; m = p[1]; y = p[2];
-  } else {
-    // MM/DD/YYYY
-    m = p[0]; d = p[1]; y = p[2];
-  }
-
-  return new Date(y, m - 1, d);
+    let year = p[2].length === 2 ? '20' + p[2] : p[2];
+    return new Date(`${year}-${p[0].padStart(2,'0')}-${p[1].padStart(2,'0')}`);
 }
 
-async function cek() {
-  const kode = document.getElementById("kode").value.trim();
-  const hasil = document.getElementById("hasil");
-  hasil.innerHTML = "";
-
-  try {
-    const res = await fetch("data/kehadiran.csv");
-    const text = await res.text();
-
+fetch('kehadiran.csv')
+.then(r => r.text())
+.then(text => {
+    const lines = text.trim().split('\n');
     let data = [];
-    const rows = text.split("\n").slice(1);
 
-    rows.forEach(r => {
-      if (!r.trim()) return;
+    lines.forEach(line => {
+        const c = line.split(';');
 
-      const kolom = r.split(",").map(x => x.trim());
-      if (kolom.length < 4) return;
+        // Skip header & baris rusak
+        if (c.length !== 4) return;
+        if (c[0].toLowerCase() === 'kode') return;
 
-      const [k, nama, tanggal, status] = kolom;
+        const tglObj = parseTanggal(c[2]);
+        if (!tglObj) return;
 
-      if (k === kode) {
         data.push({
-          nama,
-          tanggal,
-          status,
-          dateObj: parseTanggal(tanggal)
+            kode: c[0],
+            nama: c[1],
+            tanggalText: c[2],
+            tanggalObj: tglObj,
+            status: c[3]
         });
-      }
     });
+
+    // SORT TERBARU
+    data.sort((a, b) => b.tanggalObj - a.tanggalObj);
+
+    const tbody = document.getElementById('data');
+    tbody.innerHTML = '';
 
     if (data.length === 0) {
-      hasil.innerHTML = "<p>Data tidak ditemukan</p>";
-      return;
+        tbody.innerHTML = `<tr><td colspan="4" class="empty">Data tidak ditemukan</td></tr>`;
+        return;
     }
 
-    // URUTKAN TERBARU → TERLAMA
-    data.sort((a, b) => b.dateObj - a.dateObj);
-
-    // TAMPILKAN NAMA
-    hasil.innerHTML += `
-      <div class="card">
-        <b>${data[0].nama}</b>
-      </div>
-    `;
-
-    // TAMPILKAN DATA
     data.forEach(d => {
-      hasil.innerHTML += `
-        <div class="card">
-          <div class="tanggal">${d.tanggal}</div>
-          <div class="status">${d.status}</div>
-        </div>
-      `;
+        tbody.innerHTML += `
+        <tr>
+            <td>${d.tanggalText}</td>
+            <td>${d.kode}</td>
+            <td>${d.nama}</td>
+            <td>${d.status}</td>
+        </tr>`;
     });
-
-  } catch (e) {
-    hasil.innerHTML = "<p>Gagal membaca data</p>";
-    console.error(e);
-  }
-}
+})
+.catch(err => {
+    document.getElementById('data').innerHTML =
+        `<tr><td colspan="4" class="empty">❌ Gagal membaca CSV</td></tr>`;
+});
 </script>
 
 </body>
