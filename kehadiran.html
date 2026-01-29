@@ -2,67 +2,38 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Daftar Kehadiran</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kehadiran Siswa</title>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f4f6f8;
-  margin: 0;
-}
-
-header {
-  background: #1e88e5;
-  color: white;
-  padding: 16px;
-  text-align: center;
-}
-
-.container {
-  padding: 16px;
-}
-
+body { font-family: Arial; background:#f4f6f8; margin:0 }
+header { background:#1e88e5; color:white; padding:16px; text-align:center }
+.container { padding:16px }
 input, button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  width:100%; padding:10px; margin-top:10px;
+  border-radius:6px; border:1px solid #ccc
 }
-
-button {
-  background: #1e88e5;
-  color: white;
-  border: none;
-}
+button { background:#1e88e5; color:white; border:none }
 
 table {
-  width: 100%;
+  width:100%;
   border-collapse: collapse;
-  background: white;
-  margin-top: 16px;
+  background:white;
+  margin-top:16px
 }
-
 th, td {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-  font-size: 14px;
+  padding:10px;
+  border-bottom:1px solid #ddd;
+  font-size:14px
 }
-
 th {
-  background: #1e88e5;
-  color: white;
+  background:#1e88e5;
+  color:white
 }
-
-tr:nth-child(even) {
-  background: #f1f5f9;
-}
-
 .empty {
-  text-align: center;
-  padding: 16px;
-  color: #666;
+  text-align:center;
+  padding:16px;
+  color:#666
 }
 </style>
 </head>
@@ -70,7 +41,7 @@ tr:nth-child(even) {
 <body>
 
 <header>
-  <h2>📋 Cek Kehadiran Siswa</h2>
+  <h2>📋 Cek Kehadiran</h2>
   <a href="index.html" style="color:white">← Kembali</a>
 </header>
 
@@ -87,47 +58,53 @@ tr:nth-child(even) {
       </tr>
     </thead>
     <tbody id="hasil">
-      <tr><td colspan="3" class="empty">Silakan masukkan kode</td></tr>
+      <tr><td colspan="3" class="empty">Masukkan kode untuk melihat data</td></tr>
     </tbody>
   </table>
 </div>
 
 <script>
 function parseTanggal(tgl) {
-  const p = tgl.split('/');
+  const p = tgl.split("/");
   if (p.length !== 3) return null;
 
-  let year = p[2].length === 2 ? '20' + p[2] : p[2];
-  return new Date(`${year}-${p[0].padStart(2,'0')}-${p[1].padStart(2,'0')}`);
+  let mm = p[0].padStart(2,"0");
+  let dd = p[1].padStart(2,"0");
+  let yy = p[2].length === 2 ? "20" + p[2] : p[2];
+
+  return new Date(`${yy}-${mm}-${dd}`);
 }
 
 async function cek() {
-  const kodeInput = document.getElementById("kode").value.trim();
-  const tbody = document.getElementById("hasil");
-  tbody.innerHTML = `<tr><td colspan="3" class="empty">Memuat data...</td></tr>`;
+  const kode = document.getElementById("kode").value.trim();
+  const hasil = document.getElementById("hasil");
+  hasil.innerHTML = `<tr><td colspan="3" class="empty">Memuat...</td></tr>`;
 
   const res = await fetch("kehadiran.csv");
   const text = await res.text();
 
   let data = [];
-  const lines = text.split("\n");
 
-  lines.forEach(line => {
+  text.split("\n").forEach(line => {
+    line = line.trim();
+    if (!line) return;
+
+    // HARUS tepat 4 kolom
     const c = line.split(";");
-
-    // Skip header & baris rusak
     if (c.length !== 4) return;
+
+    // ABAIKAN HEADER DI MANA PUN
     if (c[0].toLowerCase() === "kode") return;
 
-    if (c[0] === kodeInput) {
-      const tglObj = parseTanggal(c[2]);
+    if (c[0].trim() === kode) {
+      const tglObj = parseTanggal(c[2].trim());
       if (!tglObj) return;
 
       data.push({
-        nama: c[1],
-        tanggalText: c[2],
+        nama: c[1].trim(),
+        tanggalText: c[2].trim(),
         tanggalObj: tglObj,
-        status: c[3]
+        status: c[3].trim()
       });
     }
   });
@@ -135,16 +112,16 @@ async function cek() {
   // URUTKAN TERBARU
   data.sort((a,b) => b.tanggalObj - a.tanggalObj);
 
-  tbody.innerHTML = "";
+  hasil.innerHTML = "";
 
   if (data.length === 0) {
-    tbody.innerHTML =
+    hasil.innerHTML =
       `<tr><td colspan="3" class="empty">Data tidak ditemukan</td></tr>`;
     return;
   }
 
   data.forEach(d => {
-    tbody.innerHTML += `
+    hasil.innerHTML += `
       <tr>
         <td>${d.tanggalText}</td>
         <td>${d.nama}</td>
