@@ -2,38 +2,25 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kehadiran Siswa</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 body { font-family: Arial; background:#f4f6f8; margin:0 }
-header { background:#1e88e5; color:white; padding:16px; text-align:center }
-.container { padding:16px }
-input, button {
+header { background:#1e88e5; color:white; padding:20px; text-align:center }
+.container { padding:20px }
+input, select, button {
   width:100%; padding:10px; margin-top:10px;
   border-radius:6px; border:1px solid #ccc
 }
 button { background:#1e88e5; color:white; border:none }
-
-table {
-  width:100%;
-  border-collapse: collapse;
-  background:white;
-  margin-top:16px
+.card {
+  background:white; padding:15px; margin-top:15px; border-radius:8px
 }
-th, td {
-  padding:10px;
-  border-bottom:1px solid #ddd;
-  font-size:14px
-}
-th {
-  background:#1e88e5;
-  color:white
-}
-.empty {
-  text-align:center;
-  padding:16px;
-  color:#666
+.rekap {
+  margin-top:10px;
+  font-weight:bold;
+  line-height:1.6
 }
 </style>
 </head>
@@ -41,92 +28,121 @@ th {
 <body>
 
 <header>
-  <h2>📋 Cek Kehadiran</h2>
-  <a href="index.html" style="color:white">← Kembali</a>
+<h2>📅 Kehadiran Siswa</h2>
+<a href="index.html" style="color:white">← Kembali</a>
 </header>
 
 <div class="container">
   <input id="kode" placeholder="Masukkan Kode Orang Tua">
   <button onclick="cek()">Lihat Kehadiran</button>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Tanggal</th>
-        <th>Nama</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody id="hasil">
-      <tr><td colspan="3" class="empty">Masukkan kode untuk melihat data</td></tr>
-    </tbody>
-  </table>
+  <select id="filterBulan" onchange="tampil()" style="display:none"></select>
+
+  <div id="hasil"></div>
 </div>
 
 <script>
+let semuaData = [];
+
 function parseTanggal(tgl) {
   const p = tgl.split("/");
-  if (p.length !== 3) return null;
-
-  let mm = p[0].padStart(2,"0");
-  let dd = p[1].padStart(2,"0");
-  let yy = p[2].length === 2 ? "20" + p[2] : p[2];
-
-  return new Date(`${yy}-${mm}-${dd}`);
+  let m = p[0].padStart(2,"0");
+  let d = p[1].padStart(2,"0");
+  let y = p[2].length === 2 ? "20"+p[2] : p[2];
+  return new Date(`${y}-${m}-${d}`);
 }
 
 async function cek() {
   const kode = document.getElementById("kode").value.trim();
-  const hasil = document.getElementById("hasil");
-  hasil.innerHTML = `<tr><td colspan="3" class="empty">Memuat...</td></tr>`;
-
   const res = await fetch("kehadiran.csv");
   const text = await res.text();
 
-  let data = [];
+  semuaData = [];
+  const rows = text.split("\n").slice(1);
 
-  text.split("\n").forEach(line => {
-    line = line.trim();
-    if (!line) return;
+  rows.forEach(r => {
+    if (!r.trim()) return;
 
-    // HARUS tepat 4 kolom
-    const c = line.split(";");
-    if (c.length !== 4) return;
+    const col = r.split(";").map(x => x.trim());
+    if (col.length < 4) return;
 
-    // ABAIKAN HEADER DI MANA PUN
-    if (c[0].toLowerCase() === "kode") return;
+    const [k, nama, tanggal, statusRaw] = col;
 
-    if (c[0].trim() === kode) {
-      const tglObj = parseTanggal(c[2].trim());
-      if (!tglObj) return;
-
-      data.push({
-        nama: c[1].trim(),
-        tanggalText: c[2].trim(),
-        tanggalObj: tglObj,
-        status: c[3].trim()
+    if (k === kode) {
+      const dateObj = parseTanggal(tanggal);
+      semuaData.push({
+        nama,
+        tanggal,
+        status: statusRaw.toUpperCase(),
+        dateObj,
+        bulan: `${dateObj.getMonth()+1}-${dateObj.getFullYear()}`
       });
     }
   });
 
-  // URUTKAN TERBARU
-  data.sort((a,b) => b.tanggalObj - a.tanggalObj);
-
-  hasil.innerHTML = "";
-
-  if (data.length === 0) {
-    hasil.innerHTML =
-      `<tr><td colspan="3" class="empty">Data tidak ditemukan</td></tr>`;
+  if (semuaData.length === 0) {
+    document.getElementById("hasil").innerHTML =
+      "<p>Data tidak ditemukan</p>";
+    document.getElementById("filterBulan").style.display = "none";
     return;
   }
 
+  // URUT TERBARU
+  semuaData.sort((a,b) => b.dateObj - a.dateObj);
+
+  // DROPDOWN BULAN
+  const select = document.getElementById("filterBulan");
+  select.innerHTML = `<option value="all">Semua Bulan</option>`;
+
+  [...new Set(semuaData.map(d => d.bulan))].forEach(b => {
+    const [m,y] = b.split("-");
+    select.innerHTML += `<option value="${b}">${m}/${y}</option>`;
+  });
+
+  select.style.display = "block";
+  tampil();
+}
+
+function tampil() {
+  const pilih = document.getElementById("filterBulan").value;
+  const hasil = document.getElementById("hasil");
+  hasil.innerHTML = "";
+
+  const data = pilih === "all"
+    ? semuaData
+    : semuaData.filter(d => d.bulan === pilih);
+
+  let hadir=0, terlambat=0, alpha=0, sakit=0, ijin=0;
+
+  data.forEach(d => {
+    switch (d.status) {
+      case "HADIR": hadir++; break;
+      case "TERLAMBAT": terlambat++; break;
+      case "SAKIT": sakit++; break;
+      case "IJIN": ijin++; break;
+      default: alpha++;
+    }
+  });
+
+  hasil.innerHTML += `
+    <div class="card">
+      <b>${data[0].nama}</b>
+      <div class="rekap">
+        ✔ HADIR: ${hadir}<br>
+        ⏰ TERLAMBAT: ${terlambat}<br>
+        🤒 SAKIT: ${sakit}<br>
+        📝 IJIN: ${ijin}<br>
+        ❌ ALPHA: ${alpha}
+      </div>
+    </div>
+  `;
+
   data.forEach(d => {
     hasil.innerHTML += `
-      <tr>
-        <td>${d.tanggalText}</td>
-        <td>${d.nama}</td>
-        <td>${d.status}</td>
-      </tr>`;
+      <div class="card">
+        ${d.tanggal} — <b>${d.status}</b>
+      </div>
+    `;
   });
 }
 </script>
