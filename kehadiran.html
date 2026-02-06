@@ -45,10 +45,16 @@ button { background:#1e88e5; color:white; border:none }
 let semuaData = [];
 
 function parseTanggal(tgl) {
+  // Cek format yyyy-mm-dd
+  if (tgl.includes('-')) {
+    return new Date(tgl);
+  }
+  
+  // Format m/d/yyyy
   const p = tgl.split("/");
-  let m = p[0].padStart(2,"0");
-  let d = p[1].padStart(2,"0");
-  let y = p[2].length === 2 ? "20"+p[2] : p[2];
+  let m = p[0].padStart(2, "0");
+  let d = p[1].padStart(2, "0");
+  let y = p[2].length === 2 ? "20" + p[2] : p[2];
   return new Date(`${y}-${m}-${d}`);
 }
 
