@@ -45,17 +45,25 @@ button { background:#1e88e5; color:white; border:none }
 let semuaData = [];
 
 function parseTanggal(tgl) {
+  // Bersihkan dari kutip (tunggal/ganda) dan spasi
+  let cleaned = tgl.replace(/['"]/g, '').trim();
+  
   // Cek format yyyy-mm-dd
-  if (tgl.includes('-')) {
-    return new Date(tgl);
+  if (cleaned.includes('-')) {
+    return new Date(cleaned);
   }
   
   // Format m/d/yyyy
-  const p = tgl.split("/");
-  let m = p[0].padStart(2, "0");
-  let d = p[1].padStart(2, "0");
-  let y = p[2].length === 2 ? "20" + p[2] : p[2];
-  return new Date(`${y}-${m}-${d}`);
+  const p = cleaned.split("/");
+  if (p.length === 3) {
+    let m = p[0].padStart(2, "0");
+    let d = p[1].padStart(2, "0");
+    let y = p[2].length === 2 ? "20" + p[2] : p[2];
+    return new Date(`${y}-${m}-${d}`);
+  }
+  
+  // Fallback
+  return new Date(cleaned);
 }
 
 async function cek() {
@@ -63,7 +71,7 @@ async function cek() {
   const res = await fetch("kehadiran.csv");
   const text = await res.text();
 
-  // Deteksi delimiter: lihat baris pertama (header)
+  // Deteksi delimiter
   const lines = text.split('\n').filter(line => line.trim() !== '');
   if (lines.length === 0) {
     document.getElementById("hasil").innerHTML = "<p>File kosong</p>";
@@ -75,18 +83,21 @@ async function cek() {
   const delimiter = commaCount >= semicolonCount ? ',' : ';';
 
   semuaData = [];
-  // Lewati baris header (i=1)
   for (let i = 1; i < lines.length; i++) {
     const r = lines[i].trim();
     if (!r) continue;
 
-    const col = r.split(delimiter).map(x => x.trim());
-    if (col.length < 4) continue; // abaikan baris tidak valid
+    // Bersihkan setiap kolom dari kutip di awal/akhir
+    const col = r.split(delimiter).map(x => x.trim().replace(/^['"]|['"]$/g, ''));
+    if (col.length < 4) continue;
 
     const [k, nama, tanggal, statusRaw] = col;
 
     if (k === kode) {
       const dateObj = parseTanggal(tanggal);
+      // Cek validitas dateObj
+      if (isNaN(dateObj.getTime())) continue; // lewati tanggal tidak valid
+
       semuaData.push({
         nama,
         tanggal,
@@ -104,10 +115,10 @@ async function cek() {
     return;
   }
 
-  // URUT TERBARU
+  // Urutkan terbaru
   semuaData.sort((a,b) => b.dateObj - a.dateObj);
 
-  // DROPDOWN BULAN
+  // Dropdown bulan
   const select = document.getElementById("filterBulan");
   select.innerHTML = `<option value="all">Semua Bulan</option>`;
 
