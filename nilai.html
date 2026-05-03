@@ -46,12 +46,47 @@ button { background:#1e88e5; color:white; border:none }
 <script>
 let semuaData = [];
 
+// Fungsi parsing tanggal: bersihkan kutip, lalu kenali format
 function parseTanggal(tgl) {
-  const p = tgl.split("/");
-  let m = p[0].padStart(2,"0");
-  let d = p[1].padStart(2,"0");
-  let y = p[2].length === 2 ? "20"+p[2] : p[2];
-  return new Date(`${y}-${m}-${d}`);
+  // Hapus tanda kutip tunggal/ganda
+  let cleaned = tgl.replace(/['"]/g, '').trim();
+  
+  // Format yyyy-mm-dd
+  if (cleaned.includes('-')) {
+    return new Date(cleaned);
+  }
+  
+  // Format m/d/yyyy atau m/d/yy
+  const p = cleaned.split("/");
+  if (p.length === 3) {
+    let m = p[0].padStart(2,"0");
+    let d = p[1].padStart(2,"0");
+    let y = p[2].length === 2 ? "20"+p[2] : p[2];
+    return new Date(`${y}-${m}-${d}`);
+  }
+  
+  return new Date(cleaned); // fallback
+}
+
+// Fungsi pemecah baris CSV yang menghormati tanda kutip ganda
+function parseCSVLine(line, delimiter) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === delimiter && !inQuotes) {
+      result.push(current.trim());
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  result.push(current.trim());
+  return result;
 }
 
 async function cek() {
@@ -60,45 +95,66 @@ async function cek() {
   const res = await fetch(`data/nilai_kelas${kelas}.csv`);
   const text = await res.text();
 
+  // Ambil baris, abaikan kosong
+  const lines = text.split('\n').filter(line => line.trim() !== '');
+  if (lines.length === 0) {
+    document.getElementById("hasil").innerHTML = "<p>File kosong</p>";
+    return;
+  }
+
+  // Deteksi delimiter dari header
+  const headerLine = lines[0];
+  const commaCount = (headerLine.match(/,/g) || []).length;
+  const semicolonCount = (headerLine.match(/;/g) || []).length;
+  const delimiter = commaCount >= semicolonCount ? ',' : ';';
+
   semuaData = [];
-  const rows = text.split("\n").slice(1);
+  
+  // Mulai dari baris ke-1 (skip header)
+  for (let i = 1; i < lines.length; i++) {
+    const r = lines[i].trim();
+    if (!r) continue;
 
-  rows.forEach(r => {
-    if (!r.trim()) return;
-    const col = r.split(";").map(x => x.trim());
-    if (col.length < 5) return;
+    const col = parseCSVLine(r, delimiter);
+    if (col.length < 5) continue;
 
-    const [k, nama, mapel, tanggal, nilai] = col;
+    const [k, nama, mapel, tanggal, nilaiStr] = col;
 
     if (k === kode) {
+      const dateObj = parseTanggal(tanggal);
+      // Abaikan tanggal yang tidak valid
+      if (isNaN(dateObj.getTime())) continue;
+
+      const nilai = Number(nilaiStr) || 0; // jika kosong anggap 0
+
       semuaData.push({
         nama,
         mapelAsli: mapel,
-        mapel: mapel.replace(/\s*\(.*?\)/g,""),
+        mapel: mapel.replace(/\s*\(.*?\)/g,""), // ambil nama mapel tanpa keterangan
         tanggal,
-        nilai: Number(nilai),
-        dateObj: parseTanggal(tanggal)
+        nilai,
+        dateObj
       });
     }
-  });
+  }
 
   if (semuaData.length === 0) {
-    document.getElementById("hasil").innerHTML =
-      "<p>Data tidak ditemukan</p>";
+    document.getElementById("hasil").innerHTML = "<p>Data tidak ditemukan</p>";
     document.getElementById("filterMapel").style.display = "none";
     return;
   }
 
+  // Urutkan data terbaru
   semuaData.sort((a,b) => b.dateObj - a.dateObj);
 
+  // Isi dropdown mapel
   const select = document.getElementById("filterMapel");
   select.innerHTML = `<option value="all">Semua Mapel</option>`;
-
   [...new Set(semuaData.map(d => d.mapel))].forEach(m => {
     select.innerHTML += `<option value="${m}">${m}</option>`;
   });
-
   select.style.display = "block";
+  
   tampil();
 }
 
@@ -111,27 +167,32 @@ function tampil() {
     ? semuaData
     : semuaData.filter(d => d.mapel === pilih);
 
+  if (data.length === 0) {
+    hasil.innerHTML = "<p>Tidak ada data untuk mapel ini</p>";
+    return;
+  }
+
   hasil.innerHTML += `<div class="card"><b>${data[0].nama}</b></div>`;
 
+  // Kelompokkan per mapel (nama dasar)
   let grup = {};
   data.forEach(d => {
     if (!grup[d.mapel]) grup[d.mapel] = [];
     grup[d.mapel].push(d);
   });
 
+  // Tampilkan per mapel
   for (let m in grup) {
     let total = 0;
     grup[m].forEach(i => total += i.nilai);
     let rata = (total / grup[m].length).toFixed(1);
 
-    hasil.innerHTML += `<div class="card">
-      <div class="mapel">${m}</div>`;
-
+    let html = `<div class="card"><div class="mapel">${m}</div>`;
     grup[m].forEach(i => {
-      hasil.innerHTML += `${i.tanggal} — ${i.mapelAsli} : <b>${i.nilai}</b><br>`;
+      html += `${i.tanggal} — ${i.mapelAsli} : <b>${i.nilai}</b><br>`;
     });
-
-    hasil.innerHTML += `<div class="avg">Rata-rata: ${rata}</div></div>`;
+    html += `<div class="avg">Rata-rata: ${rata}</div></div>`;
+    hasil.innerHTML += html;
   }
 }
 </script>
