@@ -11,9 +11,11 @@ header { background:#1e88e5; color:white; padding:20px; text-align:center }
 .container { padding:20px }
 input, select, button {
   width:100%; padding:10px; margin-top:10px;
-  border-radius:6px; border:1px solid #ccc
+  border-radius:6px; border:1px solid #ccc;
+  box-sizing: border-box;
 }
-button { background:#1e88e5; color:white; border:none }
+button { background:#1e88e5; color:white; border:none; cursor:pointer }
+button:hover { background:#1565c0 }
 .card {
   background:white; padding:15px; margin-top:15px; border-radius:8px
 }
@@ -35,6 +37,13 @@ button { background:#1e88e5; color:white; border:none }
     <option value="B">Kelas VI B</option>
   </select>
 
+  <select id="jenis">
+    <option value="harian">Nilai Harian</option>
+    <option value="praktik">Nilai Ujian Praktik</option>
+    <option value="uas">Ujian Akhir Sekolah (UAS)</option>
+    <option value="uaj">Ujian Akhir Jenjang (UAJ)</option>
+  </select>
+
   <input id="kode" placeholder="Masukkan Kode Orang Tua">
   <button onclick="cek()">Lihat Nilai</button>
 
@@ -45,18 +54,18 @@ button { background:#1e88e5; color:white; border:none }
 
 <script>
 let semuaData = [];
+let jenisSaatIni = '';
 
 // Fungsi parsing tanggal: bersihkan kutip, lalu kenali format
 function parseTanggal(tgl) {
-  // Hapus tanda kutip tunggal/ganda
+  if (!tgl) return null;
   let cleaned = tgl.replace(/['"]/g, '').trim();
+  if (!cleaned) return null;
   
-  // Format yyyy-mm-dd
   if (cleaned.includes('-')) {
     return new Date(cleaned);
   }
   
-  // Format m/d/yyyy atau m/d/yy
   const p = cleaned.split("/");
   if (p.length === 3) {
     let m = p[0].padStart(2,"0");
@@ -65,10 +74,10 @@ function parseTanggal(tgl) {
     return new Date(`${y}-${m}-${d}`);
   }
   
-  return new Date(cleaned); // fallback
+  return new Date(cleaned);
 }
 
-// Fungsi pemecah baris CSV yang menghormati tanda kutip ganda
+// Pemecah baris CSV yang menghormati tanda kutip ganda
 function parseCSVLine(line, delimiter) {
   const result = [];
   let current = '';
@@ -92,17 +101,34 @@ function parseCSVLine(line, delimiter) {
 async function cek() {
   const kode = document.getElementById("kode").value.trim();
   const kelas = document.getElementById("kelas").value;
-  const res = await fetch(`data/nilai_kelas${kelas}.csv`);
+  const jenis = document.getElementById("jenis").value;
+  jenisSaatIni = jenis;
+  
+  // Tentukan nama file sesuai jenis
+  let namaFile;
+  switch (jenis) {
+    case 'harian': namaFile = `data/nilai_harian_kelas${kelas}.csv`; break;
+    case 'praktik': namaFile = `data/nilai_praktik_kelas${kelas}.csv`; break;
+    case 'uas': namaFile = `data/nilai_akhir_sekolah_kelas${kelas}.csv`; break;
+    case 'uaj': namaFile = `data/nilai_akhir_jenjang_kelas${kelas}.csv`; break;
+    default: return;
+  }
+
+  const res = await fetch(namaFile);
+  if (!res.ok) {
+    document.getElementById("hasil").innerHTML = "<p>File tidak ditemukan</p>";
+    document.getElementById("filterMapel").style.display = "none";
+    return;
+  }
   const text = await res.text();
 
-  // Ambil baris, abaikan kosong
   const lines = text.split('\n').filter(line => line.trim() !== '');
   if (lines.length === 0) {
     document.getElementById("hasil").innerHTML = "<p>File kosong</p>";
     return;
   }
 
-  // Deteksi delimiter dari header
+  // Deteksi delimiter
   const headerLine = lines[0];
   const commaCount = (headerLine.match(/,/g) || []).length;
   const semicolonCount = (headerLine.match(/;/g) || []).length;
@@ -110,28 +136,36 @@ async function cek() {
 
   semuaData = [];
   
-  // Mulai dari baris ke-1 (skip header)
   for (let i = 1; i < lines.length; i++) {
     const r = lines[i].trim();
     if (!r) continue;
 
     const col = parseCSVLine(r, delimiter);
-    if (col.length < 5) continue;
+    if (col.length < 4) continue;
 
-    const [k, nama, mapel, tanggal, nilaiStr] = col;
+    let k, nama, mapel, tanggal, nilaiStr;
+    
+    if (col.length >= 5) {
+      // Format Harian: Kode, Nama, Mapel, Tanggal, Nilai
+      [k, nama, mapel, tanggal, nilaiStr] = col;
+    } else {
+      // Format Praktik/UAS/UAJ: Kode, Nama, Mapel, Nilai (tanpa Tanggal)
+      [k, nama, mapel, nilaiStr] = col;
+      tanggal = null;
+    }
 
     if (k === kode) {
       const dateObj = parseTanggal(tanggal);
-      // Abaikan tanggal yang tidak valid
-      if (isNaN(dateObj.getTime())) continue;
+      // Untuk data tanpa tanggal, dateObj akan null dan diabaikan validitasnya
+      if (tanggal && isNaN(dateObj.getTime())) continue;
 
-      const nilai = Number(nilaiStr) || 0; // jika kosong anggap 0
+      const nilai = Number(nilaiStr) || 0;
 
       semuaData.push({
         nama,
         mapelAsli: mapel,
         mapel: mapel.replace(/\s*\(.*?\)/g,""), // ambil nama mapel tanpa keterangan
-        tanggal,
+        tanggal: tanggal || '',
         nilai,
         dateObj
       });
@@ -144,8 +178,17 @@ async function cek() {
     return;
   }
 
-  // Urutkan data terbaru
-  semuaData.sort((a,b) => b.dateObj - a.dateObj);
+  // Urutkan: jika ada tanggal, terbaru dulu; jika tidak, urut berdasarkan mapel
+  const adaTanggal = semuaData.some(d => d.dateObj !== null);
+  if (adaTanggal) {
+    semuaData.sort((a,b) => {
+      if (!a.dateObj) return 1;
+      if (!b.dateObj) return -1;
+      return b.dateObj - a.dateObj;
+    });
+  } else {
+    semuaData.sort((a,b) => a.mapel.localeCompare(b.mapel));
+  }
 
   // Isi dropdown mapel
   const select = document.getElementById("filterMapel");
@@ -189,7 +232,12 @@ function tampil() {
 
     let html = `<div class="card"><div class="mapel">${m}</div>`;
     grup[m].forEach(i => {
-      html += `${i.tanggal} — ${i.mapelAsli} : <b>${i.nilai}</b><br>`;
+      // Jika ada tanggal (Harian) tampilkan tanggal, jika tidak hanya nilai
+      if (i.tanggal) {
+        html += `${i.tanggal} — ${i.mapelAsli} : <b>${i.nilai}</b><br>`;
+      } else {
+        html += `${i.mapelAsli} : <b>${i.nilai}</b><br>`;
+      }
     });
     html += `<div class="avg">Rata-rata: ${rata}</div></div>`;
     hasil.innerHTML += html;
