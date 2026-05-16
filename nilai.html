@@ -2,6 +2,214 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
+<title>Nilai Siswa - Versi Fix</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body { font-family: Arial; background:#f4f6f8; margin:0 }
+  header { background:#1e88e5; color:white; padding:20px; text-align:center }
+  .container { padding:20px }
+  input, select, button {
+    width:100%; padding:10px; margin-top:10px;
+    border-radius:6px; border:1px solid #ccc;
+    box-sizing: border-box;
+  }
+  button { background:#1e88e5; color:white; border:none; cursor:pointer }
+  button:hover { background:#1565c0 }
+  .card {
+    background:white; padding:15px; margin-top:15px; border-radius:8px
+  }
+  .mapel { font-weight:bold }
+  .avg { margin-top:6px; color:#1e88e5; font-weight:bold }
+  .debug {
+    background:#f0f0f0; padding:10px; font-size:12px; margin-top:10px;
+    border-radius:6px; color:#555; white-space:pre-wrap; font-family:monospace;
+  }
+</style>
+</head>
+<body>
+
+<header>
+<h2>📊 Nilai Siswa</h2>
+</header>
+
+<div class="container">
+  <select id="kelas">
+    <option value="A">Kelas VI A</option>
+    <option value="B">Kelas VI B</option>
+  </select>
+
+  <select id="jenis">
+    <option value="uas" selected>Ujian Akhir Sekolah (UAS)</option>
+  </select>
+
+  <input id="kode" placeholder="Masukkan Kode Orang Tua" value="A2.3142815160">
+  <button onclick="cek()">Lihat Nilai</button>
+
+  <select id="filterMapel" onchange="tampil()" style="display:none"></select>
+  <div id="hasil"></div>
+  <div id="debug" class="debug"></div>
+</div>
+
+<script>
+// Fungsi untuk membersihkan teks dari semua karakter aneh, spasi, dan non-digit (untuk kode)
+function bersihkanKode(str) {
+    if (!str) return '';
+    // Hapus semua karakter yang bukan digit, huruf, titik, atau minus
+    // Tapi untuk kode, kita hanya ingin mempertahankan huruf, angka, dan titik
+    return str.replace(/[^\w\.]/g, ''); // \w = huruf, angka, underscore
+}
+
+// Fungsi untuk membersihkan nilai angka
+function bersihkanNilai(str) {
+    if (!str) return '';
+    // Ambil hanya digit (0-9)
+    let match = str.match(/\d+/);
+    return match ? match[0] : '';
+}
+
+async function cek() {
+    let kodeInput = document.getElementById("kode").value.trim();
+    kodeInput = bersihkanKode(kodeInput); // bersihkan dari spasi dll
+    
+    const kelas = document.getElementById("kelas").value;
+    const debugDiv = document.getElementById("debug");
+    debugDiv.innerText = "Memuat data...";
+    
+    const namaFile = `nilai_akhir_sekolah_kelas${kelas}.csv`;
+    
+    try {
+        // Coba fetch dari root, lalu dari folder data
+        let response = await fetch(namaFile);
+        if (!response.ok) {
+            response = await fetch(`data/${namaFile}`);
+            if (!response.ok) throw new Error("File CSV tidak ditemukan");
+        }
+        let text = await response.text();
+        
+        // Hapus BOM jika ada
+        if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+        
+        const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+        if (lines.length < 2) throw new Error("File kosong");
+        
+        const semuaData = [];
+        let barisCocok = [];
+        let barisGagal = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+            const line = lines[i];
+            // Pisahkan berdasarkan koma (ignoring spasi di sekitar)
+            let cols = line.split(',').map(c => c.trim());
+            if (cols.length < 4) {
+                barisGagal.push(`Baris ${i+1}: kolom kurang (${cols.length})`);
+                continue;
+            }
+            
+            let kode = bersihkanKode(cols[0]);
+            let nama = cols[1];
+            let mapel = cols[2];
+            let nilaiStr = cols[3];
+            
+            // Bersihkan nilai dari karakter aneh
+            let nilaiAngka = parseInt(bersihkanNilai(nilaiStr), 10);
+            if (isNaN(nilaiAngka)) nilaiAngka = 0;
+            
+            if (kode === kodeInput) {
+                barisCocok.push(`Baris ${i+1}: ${mapel} = ${nilaiStr} -> ${nilaiAngka}`);
+                semuaData.push({
+                    nama: nama,
+                    mapelAsli: mapel,
+                    mapel: mapel.replace(/\s*\(.*?\)/g, ""),
+                    nilai: nilaiAngka
+                });
+            }
+        }
+        
+        // Tampilkan debug
+        debugDiv.innerText = `🔍 Kode dicari: "${kodeInput}"\n📄 Total baris CSV: ${lines.length-1}\n✅ Baris cocok: ${barisCocok.length}\n\n${barisCocok.join('\n')}`;
+        if (barisGagal.length) debugDiv.innerText += `\n\n⚠️ Baris gagal: ${barisGagal.join('\n')}`;
+        
+        if (semuaData.length === 0) {
+            document.getElementById("hasil").innerHTML = "<p>❌ Data tidak ditemukan. Periksa kode dan debug di atas.</p>";
+            document.getElementById("filterMapel").style.display = "none";
+            return;
+        }
+        
+        // Kelompokkan berdasarkan mapel
+        const grup = {};
+        semuaData.forEach(d => {
+            if (!grup[d.mapel]) grup[d.mapel] = [];
+            grup[d.mapel].push(d);
+        });
+        
+        // Dropdown filter mapel
+        const selectMapel = document.getElementById("filterMapel");
+        const unikMapel = Object.keys(grup).sort();
+        selectMapel.innerHTML = `<option value="all">Semua Mapel (${unikMapel.length})</option>`;
+        unikMapel.forEach(m => {
+            selectMapel.innerHTML += `<option value="${m}">${m}</option>`;
+        });
+        selectMapel.style.display = "block";
+        selectMapel.onchange = () => tampil(grup);
+        
+        // Simpan grup ke global sementara
+        window._grupData = grup;
+        tampil(grup);
+        
+    } catch (err) {
+        debugDiv.innerText = `❌ Error: ${err.message}`;
+        console.error(err);
+    }
+}
+
+function tampil(grup) {
+    if (!grup) grup = window._grupData;
+    if (!grup) return;
+    
+    const pilih = document.getElementById("filterMapel").value;
+    const hasil = document.getElementById("hasil");
+    hasil.innerHTML = "";
+    
+    let dataUntukDitampilkan = [];
+    if (pilih === "all") {
+        for (let m in grup) dataUntukDitampilkan.push(...grup[m]);
+    } else {
+        dataUntukDitampilkan = grup[pilih] || [];
+    }
+    
+    if (dataUntukDitampilkan.length === 0) {
+        hasil.innerHTML = "<p>Tidak ada data</p>";
+        return;
+    }
+    
+    // Tampilkan nama siswa (ambil dari data pertama)
+    const namaSiswa = dataUntukDitampilkan[0].nama;
+    hasil.innerHTML = `<div class="card"><b>👤 ${namaSiswa}</b></div>`;
+    
+    // Kelompokkan ulang per mapel untuk tampilan (jika all)
+    const tampilGrup = {};
+    dataUntukDitampilkan.forEach(d => {
+        if (!tampilGrup[d.mapel]) tampilGrup[d.mapel] = [];
+        tampilGrup[d.mapel].push(d);
+    });
+    
+    for (let m in tampilGrup) {
+        let total = tampilGrup[m].reduce((sum, d) => sum + d.nilai, 0);
+        let rata = (total / tampilGrup[m].length).toFixed(1);
+        let html = `<div class="card"><div class="mapel">📘 ${m}</div>`;
+        tampilGrup[m].forEach(d => {
+            html += `${d.mapelAsli} : <b>${d.nilai}</b><br>`;
+        });
+        html += `<div class="avg">⭐ Rata-rata: ${rata}</div></div>`;
+        hasil.innerHTML += html;
+    }
+}
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
 <title>Nilai Siswa - Fix Final</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
