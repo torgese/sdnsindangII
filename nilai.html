@@ -2,25 +2,28 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Nilai Siswa</title>
+<title>Nilai Siswa - Fix Final</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body { font-family: Arial; background:#f4f6f8; margin:0 }
-header { background:#1e88e5; color:white; padding:20px; text-align:center }
-.container { padding:20px }
-input, select, button {
-  width:100%; padding:10px; margin-top:10px;
-  border-radius:6px; border:1px solid #ccc;
-  box-sizing: border-box;
-}
-button { background:#1e88e5; color:white; border:none; cursor:pointer }
-button:hover { background:#1565c0 }
-.card {
-  background:white; padding:15px; margin-top:15px; border-radius:8px
-}
-.mapel { font-weight:bold }
-.avg { margin-top:6px; color:#1e88e5; font-weight:bold }
-.debug { background:#f0f0f0; padding:10px; font-size:12px; margin-top:10px; border-radius:6px; color:#555 }
+  body { font-family: Arial; background:#f4f6f8; margin:0 }
+  header { background:#1e88e5; color:white; padding:20px; text-align:center }
+  .container { padding:20px }
+  input, select, button {
+    width:100%; padding:10px; margin-top:10px;
+    border-radius:6px; border:1px solid #ccc;
+    box-sizing: border-box;
+  }
+  button { background:#1e88e5; color:white; border:none; cursor:pointer }
+  button:hover { background:#1565c0 }
+  .card {
+    background:white; padding:15px; margin-top:15px; border-radius:8px
+  }
+  .mapel { font-weight:bold }
+  .avg { margin-top:6px; color:#1e88e5; font-weight:bold }
+  .debug {
+    background:#f0f0f0; padding:10px; font-size:12px; margin-top:10px;
+    border-radius:6px; color:#555; white-space:pre-wrap; font-family:monospace;
+  }
 </style>
 </head>
 <body>
@@ -43,62 +46,60 @@ button:hover { background:#1565c0 }
     <option value="uaj">Ujian Akhir Jenjang (UAJ)</option>
   </select>
 
-  <input id="kode" placeholder="Masukkan Kode Orang Tua (contoh: A1.3195550441)">
+  <input id="kode" placeholder="Masukkan Kode Orang Tua (contoh: A2.3142815160)" value="A2.3142815160">
   <button onclick="cek()">Lihat Nilai</button>
 
   <select id="filterMapel" onchange="tampil()" style="display:none"></select>
   <div id="hasil"></div>
-  <div id="debug" class="debug" style="display:none"></div>
+  <div id="debug" class="debug"></div>
 </div>
 
 <script>
 let semuaData = [];
-let jenisSaatIni = '';
 
-// Bersihkan teks dari karakter tersembunyi (termasuk non-breaking space)
-function bersihkanTeks(str) {
+// Fungsi pembersihan super kuat
+function bersihkanSuper(str) {
   if (!str) return '';
-  // Ganti non-breaking space dengan spasi biasa, lalu trim
-  return str.replace(/\u00A0/g, ' ').trim();
+  // Hapus karakter non-breaking space, spasi tak terlihat, dan trim
+  let bersih = str.replace(/\u00A0/g, ' ')           // non-breaking space
+                  .replace(/[\u200B-\u200D\uFEFF]/g, '') // zero-width spaces
+                  .replace(/\s+/g, ' ')              // multiple spaces jadi satu
+                  .trim();
+  return bersih;
 }
 
-// Parse tanggal (tidak terlalu dipakai untuk UAS)
-function parseTanggal(tgl) {
-  if (!tgl) return null;
-  let cleaned = bersihkanTeks(tgl);
-  if (!cleaned) return null;
-  if (cleaned.includes('-')) return new Date(cleaned);
-  let p = cleaned.split("/");
-  if (p.length === 3) {
-    let m = p[0].padStart(2,"0");
-    let d = p[1].padStart(2,"0");
-    let y = p[2].length === 2 ? "20"+p[2] : p[2];
-    return new Date(`${y}-${m}-${d}`);
-  }
-  return new Date(cleaned);
+// Parse nilai: coba Number, jika gagal ambil angka pertama dari string
+function parseNilai(str) {
+  let cleaned = bersihkanSuper(str);
+  let num = Number(cleaned);
+  if (!isNaN(num)) return num;
+  // coba ekstrak angka menggunakan regex
+  let match = cleaned.match(/\d+/);
+  if (match) return parseInt(match[0], 10);
+  return NaN;
 }
 
-// Parser CSV yang kuat: membersihkan spasi di setiap kolom
+// Parse CSV line yang andal
 function parseCSVLine(line, delimiter) {
   const result = [];
   let current = '';
   let inQuotes = false;
   for (let i = 0; i < line.length; i++) {
-    let char = line[i];
-    if (char === '"') {
+    let ch = line[i];
+    if (ch === '"') {
       inQuotes = !inQuotes;
-    } else if (char === delimiter && !inQuotes) {
-      result.push(bersihkanTeks(current));
+    } else if (ch === delimiter && !inQuotes) {
+      result.push(bersihkanSuper(current));
       current = '';
     } else {
-      current += char;
+      current += ch;
     }
   }
-  result.push(bersihkanTeks(current));
+  result.push(bersihkanSuper(current));
   return result;
 }
 
-// Coba fetch dari beberapa path (data/ atau root)
+// Fetch dengan fallback path
 async function fetchCSV(fileName) {
   const paths = [`data/${fileName}`, fileName];
   for (let path of paths) {
@@ -106,22 +107,22 @@ async function fetchCSV(fileName) {
       const res = await fetch(path);
       if (res.ok) {
         const text = await res.text();
-        console.log(`✅ Loaded from: ${path}`);
+        console.log(`✅ Loaded: ${path}`);
         return text;
       }
-    } catch(e) { console.log(`❌ Gagal load ${path}`); }
+    } catch(e) { console.warn(`Gagal: ${path}`); }
   }
-  throw new Error(`File ${fileName} tidak ditemukan di data/ maupun root.`);
+  throw new Error(`File ${fileName} tidak ditemukan`);
 }
 
 async function cek() {
-  const kodeInput = document.getElementById("kode").value.trim();
+  const kodeInput = bersihkanSuper(document.getElementById("kode").value);
   const kelas = document.getElementById("kelas").value;
   const jenis = document.getElementById("jenis").value;
-  jenisSaatIni = jenis;
-
+  const debugDiv = document.getElementById("debug");
+  
   if (!kodeInput) {
-    alert("Masukkan kode orang tua terlebih dahulu");
+    alert("Masukkan kode");
     return;
   }
 
@@ -136,87 +137,92 @@ async function cek() {
 
   try {
     const text = await fetchCSV(namaFile);
-    const lines = text.split(/\r?\n/).filter(l => bersihkanTeks(l).length > 0);
+    const lines = text.split(/\r?\n/).filter(l => bersihkanSuper(l).length > 0);
     if (lines.length < 2) throw new Error("File kosong");
 
-    // Deteksi delimiter (koma atau titik koma)
+    // Deteksi delimiter
     const headerLine = lines[0];
     const commaCount = (headerLine.match(/,/g) || []).length;
     const semicolonCount = (headerLine.match(/;/g) || []).length;
     const delimiter = commaCount >= semicolonCount ? ',' : ';';
 
     semuaData = [];
-    let totalBarisValid = 0;
+    let barisDitemukan = 0;
+    let barisGagal = [];
+    let barisCocok = 0;
 
     for (let i = 1; i < lines.length; i++) {
-      const rawLine = lines[i];
-      const col = parseCSVLine(rawLine, delimiter);
-      if (col.length < 4) continue;
+      const raw = lines[i];
+      const col = parseCSVLine(raw, delimiter);
+      if (col.length < 4) {
+        barisGagal.push(`Baris ${i+1}: kolom kurang (${col.length}) - ${raw.substring(0,50)}`);
+        continue;
+      }
 
       let kode, nama, mapel, tanggal, nilaiStr;
       if (col.length >= 5) {
         [kode, nama, mapel, tanggal, nilaiStr] = col;
       } else {
         [kode, nama, mapel, nilaiStr] = col;
-        tanggal = null;
+        tanggal = '';
       }
 
-      // Bersihkan kode dari karakter aneh (non-breaking space dll)
-      const kodeBersih = bersihkanTeks(kode);
-      if (kodeBersih !== kodeInput) continue; // tidak cocok
+      // Bersihkan kode
+      const kodeBersih = bersihkanSuper(kode);
+      if (kodeBersih !== kodeInput) continue;
+      barisCocok++;
 
-      const nilai = Number(nilaiStr);
-      if (isNaN(nilai)) continue;
+      const nilai = parseNilai(nilaiStr);
+      if (isNaN(nilai)) {
+        barisGagal.push(`Baris ${i+1}: nilai tidak valid '${nilaiStr}'`);
+        continue;
+      }
 
-      // Bersihkan nama mapel (hilangkan keterangan dalam kurung)
       const mapelAsli = mapel;
       const mapelBersih = mapelAsli.replace(/\s*\(.*?\)/g, "").trim();
 
       semuaData.push({
-        nama: bersihkanTeks(nama),
+        nama: bersihkanSuper(nama),
         mapelAsli: mapelAsli,
         mapel: mapelBersih,
-        tanggal: tanggal ? bersihkanTeks(tanggal) : '',
-        nilai: nilai,
-        dateObj: parseTanggal(tanggal)
+        tanggal: tanggal ? bersihkanSuper(tanggal) : '',
+        nilai: nilai
       });
-      totalBarisValid++;
+      barisDitemukan++;
     }
 
-    // Debug info
-    const debugDiv = document.getElementById("debug");
+    // Tampilkan debug
+    let debugMsg = `🔍 Kode dicari: "${kodeInput}"\n`;
+    debugMsg += `📄 Total baris CSV: ${lines.length-1}\n`;
+    debugMsg += `✅ Baris dengan kode cocok: ${barisCocok}\n`;
+    debugMsg += `📊 Berhasil diproses: ${barisDitemukan}\n`;
+    if (barisGagal.length > 0) {
+      debugMsg += `⚠️ Gagal (${barisGagal.length}):\n${barisGagal.slice(0,5).join('\n')}`;
+    }
+    debugDiv.innerText = debugMsg;
+
     if (semuaData.length === 0) {
-      debugDiv.style.display = "block";
-      debugDiv.innerHTML = `⚠️ Tidak ada data untuk kode "${kodeInput}". Pastikan kode sesuai (contoh: A1.3195550441). Total baris di CSV: ${lines.length-1}, ditemukan baris valid: ${totalBarisValid}`;
-      document.getElementById("hasil").innerHTML = "<p>Data tidak ditemukan</p>";
+      document.getElementById("hasil").innerHTML = "<p>❌ Data tidak ditemukan. Periksa debug di bawah.</p>";
       document.getElementById("filterMapel").style.display = "none";
       return;
-    } else {
-      debugDiv.style.display = "none";
     }
 
-    // Urutkan (jika ada tanggal, urut berdasarkan tanggal terbaru)
-    const adaTanggal = semuaData.some(d => d.dateObj !== null);
-    if (adaTanggal) {
-      semuaData.sort((a,b) => (b.dateObj||0) - (a.dateObj||0));
-    } else {
-      semuaData.sort((a,b) => a.mapel.localeCompare(b.mapel));
-    }
+    // Urutkan berdasarkan mapel
+    semuaData.sort((a,b) => a.mapel.localeCompare(b.mapel));
 
-    // Populate dropdown mapel
-    const select = document.getElementById("filterMapel");
-    const mapelUnik = [...new Set(semuaData.map(d => d.mapel))];
-    select.innerHTML = `<option value="all">Semua Mapel (${mapelUnik.length})</option>`;
-    mapelUnik.forEach(m => {
-      select.innerHTML += `<option value="${m}">${m}</option>`;
+    // Dropdown mapel
+    const selectMapel = document.getElementById("filterMapel");
+    const unikMapel = [...new Set(semuaData.map(d => d.mapel))];
+    selectMapel.innerHTML = `<option value="all">Semua Mapel (${unikMapel.length})</option>`;
+    unikMapel.forEach(m => {
+      selectMapel.innerHTML += `<option value="${m}">${m}</option>`;
     });
-    select.style.display = "block";
+    selectMapel.style.display = "block";
 
     tampil();
   } catch (err) {
+    debugDiv.innerText = `❌ Error: ${err.message}`;
     console.error(err);
-    document.getElementById("hasil").innerHTML = `<p>Error: ${err.message}</p>`;
-    document.getElementById("filterMapel").style.display = "none";
   }
 }
 
@@ -225,20 +231,15 @@ function tampil() {
   const hasil = document.getElementById("hasil");
   hasil.innerHTML = "";
 
-  let data = pilih === "all"
-    ? semuaData
-    : semuaData.filter(d => d.mapel === pilih);
-
+  let data = pilih === "all" ? semuaData : semuaData.filter(d => d.mapel === pilih);
   if (data.length === 0) {
     hasil.innerHTML = "<p>Tidak ada data untuk mapel ini</p>";
     return;
   }
 
-  // Tampilkan nama siswa
-  hasil.innerHTML += `<div class="card"><b>📌 ${data[0].nama}</b></div>`;
+  hasil.innerHTML += `<div class="card"><b>👤 ${data[0].nama}</b></div>`;
 
-  // Kelompokkan per mapel
-  let grup = {};
+  const grup = {};
   data.forEach(d => {
     if (!grup[d.mapel]) grup[d.mapel] = [];
     grup[d.mapel].push(d);
@@ -248,14 +249,10 @@ function tampil() {
     let total = 0;
     grup[m].forEach(i => total += i.nilai);
     let rata = (total / grup[m].length).toFixed(1);
-
-    let html = `<div class="card"><div class="mapel">📖 ${m}</div>`;
+    let html = `<div class="card"><div class="mapel">📘 ${m}</div>`;
     grup[m].forEach(i => {
-      if (i.tanggal) {
-        html += `${i.tanggal} — ${i.mapelAsli} : <b>${i.nilai}</b><br>`;
-      } else {
-        html += `${i.mapelAsli} : <b>${i.nilai}</b><br>`;
-      }
+      if (i.tanggal) html += `${i.tanggal} — `;
+      html += `${i.mapelAsli} : <b>${i.nilai}</b><br>`;
     });
     html += `<div class="avg">⭐ Rata-rata: ${rata}</div></div>`;
     hasil.innerHTML += html;
