@@ -178,7 +178,7 @@
 
 <header>
   <h2>📋 Nilai Siswa</h2>
-  <p>Ujian Harian · Praktik · UAS · UAJ</p>
+  <p>Ujian Harian · Praktik · UAS · UAJ · TKA</p>
 </header>
 
 <div class="container">
@@ -195,10 +195,11 @@
       <option value="praktik">🧪 Nilai Ujian Praktik</option>
       <option value="uas" selected>📝 Ujian Akhir Sekolah (UAS)</option>
       <option value="uaj">🎓 Ujian Akhir Jenjang (UAJ)</option>
+      <option value="tka">📊 TKA (Tes Kemampuan Akademik)</option>
     </select>
 
     <label>🔑 Kode Orang Tua / Siswa</label>
-    <input type="text" id="kodeInput" placeholder="Contoh: A2.3142815160" value="A2.3142815160">
+    <input type="text" id="kodeInput" placeholder="Contoh: A2.3142815160" value="">
 
     <button id="btnLihat">🔍 Lihat Nilai</button>
   </div>
@@ -293,6 +294,7 @@
       case 'praktik': return `nilai_praktik_kelas${kelas}.csv`;
       case 'uas': return `nilai_akhir_sekolah_kelas${kelas}.csv`;
       case 'uaj': return `nilai_akhir_jenjang_kelas${kelas}.csv`;
+      case 'tka': return `nilai_tka_kelas${kelas}.csv`;
       default: return null;
     }
   }
@@ -300,6 +302,7 @@
   // global data store
   let currentData = [];       // array of { nama, mapelAsli, mapelBersih, nilai, tanggal }
   let currentNamaSiswa = '';
+  let currentJenis = '';      // tambahan untuk aturan tampilkan rata-rata
 
   // ================ FUNGSI UTAMA CEK NILAI ================
   async function loadAndDisplay() {
@@ -339,7 +342,6 @@
       const headers = parseCSVLine(lines[0], delimiter);
       
       // deteksi struktur: butuh minimal kolom: kode, nama, mapel, nilai
-      // bisa juga ada kolom tanggal (opsional)
       let idxKode = -1, idxNama = -1, idxMapel = -1, idxNilai = -1, idxTanggal = -1;
       for (let i = 0; i < headers.length; i++) {
         let h = headers[i].toLowerCase();
@@ -416,6 +418,7 @@
       // simpan ke global
       currentData = matchedRows;
       currentNamaSiswa = matchedRows[0].nama;
+      currentJenis = jenis;   // simpan jenis untuk aturan rata-rata
       
       // susun dropdown filter mapel (unique)
       const uniqueMapep = [...new Set(currentData.map(d => d.mapelBersih))].sort();
@@ -458,7 +461,7 @@
       return;
     }
     
-    // Kelompokkan berdasarkan mapel bersih (untuk kasus all mapel)
+    // Kelompokkan berdasarkan mapel bersih
     const groupByMapel = new Map();
     for (let item of filtered) {
       const key = item.mapelBersih;
@@ -467,6 +470,9 @@
     }
     
     let html = `<div class="card" style="background:#f9fbfd;"><span style="font-weight:bold;">👩‍🎓 Nama Siswa : ${currentNamaSiswa}</span></div>`;
+    
+    // Tentukan apakah jenis ini perlu menampilkan rata-rata (hanya 'harian')
+    const showAverage = (currentJenis === 'harian');
     
     for (let [mapelNama, items] of groupByMapel.entries()) {
       let totalNilai = 0;
@@ -481,10 +487,11 @@
         <div class="card">
           <div class="mapel">📖 ${mapelNama} <span class="badge-jenis">${items.length} data</span></div>
           ${detailHtml}
-          <hr>
-          <div class="avg">⭐ Rata-rata: ${rata}</div>
-        </div>
       `;
+      if (showAverage) {
+        html += `<hr><div class="avg">⭐ Rata-rata: ${rata}</div>`;
+      }
+      html += `</div>`;
     }
     
     hasilDiv.innerHTML = html;
@@ -504,7 +511,7 @@
     if (e.key === 'Enter') loadAndDisplay();
   });
   
-  // small demo hint: jika user ganti jenis/kelas, kita reset tampilan agar lebih intuitif
+  // reset tampilan jika ganti kelas atau jenis
   const resetOnChange = () => {
     document.getElementById('hasilContainer').innerHTML = '';
     document.getElementById('filterContainer').style.display = 'none';
